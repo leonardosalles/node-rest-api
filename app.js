@@ -2,11 +2,28 @@ var express  = require("express"),
     app      = express(),
     http     = require("http"),
     server   = http.createServer(app),
-    mongoose = require('mongoose'); 
+    mongoose = require('mongoose');
 
 app.configure(function () {
+  app.use (function(req, res, next) {
+    var data='';
+    req.setEncoding('utf8');
+    req.on('data', function(chunk) {
+       data += chunk;
+    });
+
+    req.on('end', function() {
+        if (req.method === 'POST' || req.method === 'PUT') {
+          req.body = JSON.parse(data);
+        } else {
+          req.body = data;
+        }
+
+        next();
+    });
+  });
   app.use(express.bodyParser());
-  app.use(express.methodOverride());
+  /*app.use(express.methodOverride());*/
   app.use(app.router);
 });
 

@@ -39,7 +39,7 @@ module.exports = function(app) {
   		poster:   req.body.poster,
   		seasons:  req.body.seasons,
   		genre:    req.body.genre,
-  		summary:  req.body.summary  
+  		summary:  req.body.summary
   	});
 
   	tvshow.save(function(err) {
@@ -56,7 +56,7 @@ module.exports = function(app) {
   //PUT - Update a register already exists
   updateTVShow = function(req, res) {
   	TVShow.findById(req.params.id, function(err, tvshow) {
-  		tvshow.title   = req.body.petId;
+  		tvshow.title   = req.body.title;
   		tvshow.year    = req.body.year;
   		tvshow.country = req.body.country;
   		tvshow.poster  = req.body.poster;
@@ -78,11 +78,19 @@ module.exports = function(app) {
   //DELETE - Delete a TVShow with specified ID
   deleteTVShow = function(req, res) {
   	TVShow.findById(req.params.id, function(err, tvshow) {
+      if (!tvshow) {
+        res.statusCode = 404;
+        res.send({status: 404, type: 'not-found'});
+      }
+      
   		tvshow.remove(function(err) {
   			if(!err) {
   				console.log('Removed');
+          res.send({status: 200, type: 'success'});
   			} else {
   				console.log('ERROR: ' + err);
+          res.statusCode = 401;
+          res.send({status: 401, type: 'error'});
   			}
   		})
   	});
